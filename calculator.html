@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<style>
+		#box{
+		}
+		.row{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-top: 20px;
+			width: 40%;
+			margin-left: 30%;
+		}
+		.calKey{
+			background-color: aquamarine;
+			border-radius: 10px;
+			width: 50px;
+			height: 50px;
+			margin-left: 20px;
+			 /*flex */
+			    display: flex;
+			    /*vertical center*/
+			    align-items: center;
+			    /*horizontal center*/
+			    justify-content: center;
+		}
+		#result{
+			height: 50px;
+			text-align: right;
+			font-size: 30px;
+			width: 20%;
+			margin-left: 35%;
+		}
+		#history{
+			height: 50px;
+			text-align: center;
+			font-size: 30px;
+			width: 20%;
+			margin-left: 35%;
+		}
+	</style>
+	<body>
+		<div id="box">
+			<div id="history"></div>
+			<div id="result">
+				
+			</div>
+			<div class="row">
+				<div id="clear" class="calKey" onclick="clearzero()">C</div>
+				<div id="Negate" class="calKey" onclick="negate()">+/-</div>
+				<div id="per" class="calKey" onclick="getPercent('%')">%</div>
+				<div id="division" class="calKey" onclick="op('/')">➗</div>
+			</div>
+			<div class="row">
+				<div id="" class="calKey" onclick="command(7)">7</div>
+				<div id="" class="calKey" onclick="command(8)">8</div>
+				<div id="" class="calKey" onclick="command(9)">9</div>
+				<div id="multiply" class="calKey" onclick="op('*')">X</div>
+			</div>
+			<div class="row">
+				<div id="" class="calKey" onclick="command(4)">4</div>
+				<div id="" class="calKey" onclick="command(5)">5</div>
+				<div id="" class="calKey" onclick="command(6)">6</div>
+				<div id="subtract" class="calKey" onclick="op('-')">-</div>
+			</div>
+			<div class="row">
+				<div id="num1" class="calKey"  onclick="command(1)">1</div>
+				<div id="num2" class="calKey"  onclick="command(2)">2</div>
+				<div id="num3" class="calKey"  onclick="command(3)">3</div>
+				<div id="add" class="calKey" onclick="op('+')">+</div>
+			</div>
+			<div class="row">
+				<div id="num0" class="calKey" onclick="command(0)">0</div>
+				<div id="" class="calKey"  onclick="dot()">.</div>
+				<div id="delete" class="calKey" onclick="del()">del</div>
+				<div id="calculate" class="calKey" onclick="equal()">=</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		var resultDom=document.getElementById("result");
+		var historyDom = document.getElementById("history");
+		var dotFlag=true;
+		var opFlag=true;
+		var equFlag=true;
+		var reslutlist = "";
+		var negateFlag = true;
+		function command(num){
+		    if(!equFlag){
+		        resultDom.innerText="0";
+		        equFlag=true;
+		    }
+		    opFlag=true;
+		    var str=resultDom.innerText;
+		    str=(str=="0"?"":str);
+		    resultDom.innerText=str+num;
+		};
+		
+		//+ - * /
+		function op(op){
+		    if(opFlag){
+		        resultDom.innerText+=op;
+		        dotFlag=true;
+		        opFlag=false;
+		        equFlag=true;
+		    }
+		};
+		
+		//decimal points
+		function dot(){
+		    if(dotFlag){
+		        //get value
+		        var num=resultDom.innerText;
+		        resultDom.innerText=num+".";
+		        dotFlag=false;
+		    }
+		}
+		function negate(){
+			if(negateFlag){
+				resultDom.innerText = "-"+resultDom.innerText;
+				negateFlag = false;
+			}else{
+				negateFlag = true;
+				resultDom.innerText = resultDom.innerText.substr(1,resultDom.innerText.length-1);
+			}
+		}
+		//calculation
+		function equal(){
+		    var num=resultDom.innerText;
+		    resultDom.innerText=eval(num);
+			if(reslutlist!=""){
+				reslutlist = reslutlist + ","+resultDom.innerText;
+			}else{
+				reslutlist = resultDom.innerText;
+			}
+			if(reslutlist.split(",").length>=10){
+				var temp = reslutlist.split(",");
+				reslutlist = temp[1]+","+temp[2]+","+
+							 temp[3]+","+temp[4]+","+
+							 temp[5]+","+temp[6]+","+
+							 temp[7]+","+temp[8]+","+
+							 temp[9]+","+resultDom.innerText;
+			}
+			historyDom.innerText = "history:"+reslutlist; 
+			console.log(reslutlist);
+			console.log(historyDom.innerText);
+		    var r=resultDom.innerText;
+		    dotFlag=(r.indexOf(".")==-1?true:false);
+		    opFlag=true;
+		    equFlag=false;
+			
+		}
+		function dzero(){
+		    var num = resultDom.innerText;//get value
+		    if(num=="0"){
+		        return;
+		    }
+		    var str = resultDom.innerText;
+		    resultDom.innerText = str + "00";
+		};
+		
+		//clear
+		function clearzero(){
+		    resultDom.innerText="0";
+		    opFlag=true;
+		    dotFlag=true;
+		}
+		
+		//back
+		function del(){
+		    var val=resultDom.innerText;
+		    if(!val){return;}
+		    var str=val.substring(0,val.length-1);
+		    if(str && /[\.|\+|\-|\*|\/|\%]$/.test(str)){
+		        resultDom.innerText = str.replace(/[\.|\+|\-|\*|\/|\%]$/,"")||0;
+		        dotFlag = true;//decimal place
+		    }else{
+		        resultDom.innerText = str||0;
+		    }
+		}
+		
+		//percentage
+		function getPercent(num) {
+		    var val=resultDom.innerText;
+		    var add=val.indexOf("+");
+		    var sub=val.indexOf("-");
+		    var mul=val.indexOf("*");
+		    var divide=val.indexOf("/");
+		    var max = Math.max(add,sub,mul,divide);
+		    var lastStr = val.substring(max+1,val.length);
+		    var beforeStr = val.substring(0,max+1);
+		    var percent = lastStr/100;
+		    resultDom.innerText = beforeStr+percent;
+		}
+	</script>
+</html>
